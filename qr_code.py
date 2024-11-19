@@ -14,7 +14,7 @@ class QrCode:
         return [[0 for _ in range(length)] for _ in range(width)]
 
     @staticmethod
-    def positionnig(x, array: list[list]) -> list[list]:
+    def positioning(x, array: list[list]) -> list[list]:
         
 
     @staticmethod
