@@ -28,31 +28,31 @@ VERSION_CAPACITIES: dict = load_json(DIR_DATA / "version_capacities.json")
 size = lambda version: 4 * version + 17
 
 # Constants to define the level of error correction
-L = 0b00 # 7%
-M = 0b01 # 15% (by default)
-Q = 0b10 # 25%
-H = 0b11 # 30%
+L = "00" # 7%
+M = "01" # 15% (by default)
+Q = "10" # 25%
+H = "11" # 30%
 
 # Constants to define the data type
-TYPE_1 = 0b0001 # Numbers only: numeric (decimal digits from 0 to 9)
-TYPE_2 = 0b0010 # Letters and numbers: alphanumeric (decimal digits from 0 to 9, 
+TYPE_1 = "0001" # Numbers only: numeric (decimal digits from 0 to 9)
+TYPE_2 = "0010" # Letters and numbers: alphanumeric (decimal digits from 0 to 9, 
                 # and upper-case letters (not lower-case!), 
                 # and the symbols $, %, *, +, -, ., /, and : as well as a space)
-TYPE_3 = 0b0100 # Text coded in 8-bit values (ISO-8859-1 character set)
-TYPE_4 = 0b1000 # Japanese kanji ideogram (JIS Shift pose character)
+TYPE_3 = "0100" # Text coded in 8-bit values (ISO-8859-1 character set)
+TYPE_4 = "1000" # Japanese kanji ideogram (JIS Shift pose character)
 
 CHAR_TYPE_1 = "0123456789" # all symbols authorized for type 1
 CHAR_TYPE_2 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:" # all symbols authorized for type 2
 
 # Constants to define the mask pattern
-MASK_PATTERN_0 = 0b000
-MASK_PATTERN_1 = 0b001
-MASK_PATTERN_2 = 0b010
-MASK_PATTERN_3 = 0b011
-MASK_PATTERN_4 = 0b100 # by default
-MASK_PATTERN_5 = 0b101
-MASK_PATTERN_6 = 0b110
-MASK_PATTERN_7 = 0b111
+MASK_PATTERN_0 = "000"
+MASK_PATTERN_1 = "001"
+MASK_PATTERN_2 = "010"
+MASK_PATTERN_3 = "011"
+MASK_PATTERN_4 = "100" # by default
+MASK_PATTERN_5 = "101"
+MASK_PATTERN_6 = "110"
+MASK_PATTERN_7 = "111"
 
 # Constants to define QR-Code size
 VERSION_1 = 1 # by default

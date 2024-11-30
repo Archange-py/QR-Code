@@ -7,7 +7,8 @@ class QrCode:
     def __init__(self, string: str):
         """A simple implementation of a QR-Code in a 2D matrice"""
         self.string = string
-        self.level_correction: bytes = M
+        self.level_correction: str = M
+        self.mask_pattern: str = MASK_PATTERN_4
         self.version: int = self.find_best_version()
         self.size: int = size(self.version)
         self.array: list[list] = QrCode.fill(self.version, 0)
@@ -20,7 +21,7 @@ class QrCode:
         return [[fill for _ in range(_size)] for _ in range(_size)]
 
     @staticmethod
-    def check_data_type(string: str) -> bytes:
+    def check_data_type(string: str) -> str:
         if string.isdigit():
             return TYPE_1
         elif all(letter in CHAR_TYPE_2 for letter in string):
@@ -50,6 +51,21 @@ class QrCode:
             for y in range(y0, y1):
                 self.array[x0][y] = 1 if not y%2 else 0
 
+    def get_infos(self) -> list[int]:
+        list_infos: list[str] = [self.level_correction, self.mask_pattern]
+        format_information: list[int] = []
+
+        for info in list_infos:
+            format_information.extend(list(info))
+
+        if len(format_information) != self.version:
+            format_information.extend([0 for _ in range(size(self.version) - len(format_information))])
+
+        return format_information
+
+    def apply_infos(self, x0: int, y0: int, x1: int, y1: 0):
+        format_information: list[int] = self.get_infos()
+
     def init_matrice(self):
         length_espacement: int = size(self.version) - 16
 
@@ -62,11 +78,11 @@ class QrCode:
 
         self.array[8][13] = 1
 
-        infos: list[]
-        self.apply_infos()
+        self.apply_infos(0, 9, 21, 9)
+        self.apply_infos(9, 21, 9, 0)
 
-    def find_best_version(self) -> bytes:
-        data_type: bytes = QrCode.check_data_type(self.string)
+    def find_best_version(self) -> int:
+        data_type: int = QrCode.check_data_type(self.string)
 
         return VERSION_1
 
