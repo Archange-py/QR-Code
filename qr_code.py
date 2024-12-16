@@ -17,7 +17,9 @@ from Data.constants import *
 
 from kandinsky import fill_rect
 
-from numpy import zeros, array, ndarray
+from itertools import cycle
+
+from numpy import array, ndarray
 
 
 class QrCode:
@@ -30,6 +32,7 @@ class QrCode:
         self.string = string
         self.level_correction: str = level_correction
         self.mask_pattern: str = mask_pattern
+        self.data_type: str = QrCode.check_data_type(self.string)
         self.version: int = self.find_best_version()
         self.size: int = size(self.version)
 
@@ -60,6 +63,9 @@ class QrCode:
             return TYPE_3
         else:
             return TYPE_4
+
+    def find_best_version(self) -> int:
+        return VERSION_1 # for the moment
 
     def apply_positioning(self, x: int = 0, y: int = 0):
         for _x in range(1, 6):
@@ -108,6 +114,88 @@ class QrCode:
             for y in range(self.size):
                 self.array[-y-1][x0] = format_information[y] if format_information[y] != -1 else self.array[x0][-y-1]
 
+    def check_length_string(self) -> int:
+        data_type = int(self.data_type, base=2)
+
+        if self.version <= 9:
+            match data_type:
+                case 1: return 10
+                case 2: return 9
+                case 4: return 8
+                case 8: return 8
+
+        elif 10 <= self.version <= 26:
+            match data_type:
+                case 1: return 12
+                case 2: return 11
+                case 4: return 16
+                case 8: return 10
+
+        elif 27 <= self.version <= 40:
+            match data_type:
+                case 1: return 14
+                case 2: return 13
+                case 4: return 16
+                case 8: return 12
+
+    def get_length_string(self) -> list[int]:
+        length: int = self.check_length_string()
+        length_string: list[int] = [int(nbr) for nbr in list(bin(len(self.string))[2:].rjust(length, '0'))]
+        return length_string
+
+    def convert_string(self) -> list[int]:
+        if self.data_type != TYPE_3:
+            raise NotImplementedError("For the moment, just the encoding of octet type is available.")
+
+        list_bin: list[int] = []
+
+        for char in self.string:
+            binary: list[int] = list(bin(ord(char))[2:].rjust(8, '0'))
+            list_bin.extend([int(nbr) for nbr in binary])
+
+        return list_bin
+
+    def get_total_nbr_bits(self) -> int:
+        return 128 # for the moment
+
+    def get_encoding_string(self) -> list[int]:
+        data_type: list[int] = [int(nbr) for nbr in self.data_type]
+        length_string: list[int] = self.get_length_string()
+        convert_string: list[int] = self.convert_string()
+
+        encoding_bits: list[int] = data_type + length_string + convert_string
+        total_nbr_bits: int = self.get_total_nbr_bits()
+
+        if len(encoding_bits) > total_nbr_bits:
+            raise NotImplementedError("For the moment, just the version 1 is available.")
+
+        elif len(encoding_bits) < total_nbr_bits:
+            delta: int = total_nbr_bits - len(encoding_bits)
+
+            if delta <= 4:
+                encoding_bits.extend([0 for _ in range(delta)])
+
+            elif delta > 4:
+                encoding_bits.extend([0 for _ in range(4)])
+
+                length_to_8_multiple: int = 8 - (len(encoding_bits)%8)
+                encoding_bits.extend([0 for _ in range(length_to_8_multiple)])
+
+                delta: int = total_nbr_bits - len(encoding_bits)
+
+                if len(encoding_bits) > total_nbr_bits:
+                    for _ in range(abs(delta)):
+                        encoding_bits.pop()
+
+                else:
+                    pad: cycle = cycle(["11101100", "00010001"])
+                    nbr_pad = int(delta / 8)
+
+                    for _ in range(nbr_pad):
+                        encoding_bits.extend([int(nbr) for nbr in next(pad)])
+
+        return encoding_bits
+
     def init_matrice(self):
         length_espacement: int = self.size - 16
 
@@ -123,11 +211,6 @@ class QrCode:
         self.apply_infos(0, 8, 21, 8)
         self.apply_infos(8, 21, 8, 0)
 
-    def find_best_version(self) -> int:
-        data_type: int = QrCode.check_data_type(self.string)
-
-        return VERSION_1
-
     def draw(self, pos_x: int = 65, pos_y: int = 20, thickness: int = 8, spacing: int = 0):
         for x, y in [(x, y) for y in range(self.size) for x in range(self.size)]:
             if self.array[y][x] == 0: color = (200, 200, 200)
@@ -138,5 +221,5 @@ class QrCode:
             fill_rect(pos_x + x * (thickness + spacing), pos_y + y * (thickness + spacing), thickness, thickness, color)
 
 if __name__ == '__main__':
-    qr = QrCode("")
+    qr = QrCode("Hello, word!")
     qr.draw(spacing=1)
