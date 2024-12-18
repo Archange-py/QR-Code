@@ -1,29 +1,5 @@
 """This file contains useful constants for Qr-Code parameters"""
 
-from pathlib import Path
-
-import json
-import os
-
-
-def load_json(path: str) -> dict:
-    """A function to load data in a json file.
-
-    Args:
-        path (str): The relative path of the file.
-
-    Returns:
-        dict: Return a dict wich contains data.
-    """
-    name: str = os.path.split(path)[1]
-
-    with open(path, 'r', encoding='utf-8') as file:
-        return json.load(file)
-
-
-DIR_DATA: Path = Path(os.path.dirname(__file__))
-VERSION_CAPACITIES: dict = load_json(DIR_DATA / "version_capacities.json")
-
 # A lambda function to determinate the size of the QR-Code with the number of the version
 size = lambda version: 4 * version + 17
 
@@ -54,7 +30,7 @@ MASK_PATTERN_5 = "101"
 MASK_PATTERN_6 = "110"
 MASK_PATTERN_7 = "111"
 
-# Constants to define QR-Code size
+# Constants to define QR-Code version
 VERSION_1 = 1 # by default
 VERSION_2 = 2
 VERSION_3 = 3
