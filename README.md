@@ -3,7 +3,7 @@
 </p>
 
 
-# QR Codes
+# QR Codes - School Project
 ***
 ###
 A simple project based around qr code generation, and decoding from camera or qr code image. A quick Response generator: QR-Code.
